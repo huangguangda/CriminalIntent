@@ -51,7 +51,7 @@ public class CrimeFragment extends Fragment {
 
             }
         } );
-        mDataButton = (Button)v.findViewById ( R.id.crime_data );
+        mDataButton = (Button)v.findViewById ( R.id.crime_date );
         mDataButton.setText ( mCrime.getDate ().toString () );
         mDataButton.setEnabled ( false );
 
