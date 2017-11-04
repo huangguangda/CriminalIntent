@@ -21,18 +21,21 @@ public class CrimeLab {
         }
         return sCrimeLab;
     }
+
     private CrimeLab(Context context){
         mCrimes = new ArrayList<> (  );
-        for (int i = 0; i <100; i++){
+        for (int i = 0; i < 100; i++){
             Crime crime = new Crime ();
             crime.setTitle ( "Crime #" + i );
             crime.setSolved ( i % 2 == 0 );
             mCrimes.add ( crime );
         }
     }
+
     public List<Crime> getCrimes(){
         return mCrimes;
     }
+
     public Crime getCrime(UUID id){
         for (Crime crime : mCrimes){
             if (crime.getId ().equals ( id )){
