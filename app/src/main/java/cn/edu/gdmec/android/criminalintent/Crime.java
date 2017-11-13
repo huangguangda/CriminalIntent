@@ -12,6 +12,7 @@ public class Crime {
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
+    private String mSuspect;
 
     public Crime(){
         this(UUID.randomUUID ());
