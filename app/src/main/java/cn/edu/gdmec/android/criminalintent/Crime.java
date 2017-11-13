@@ -48,7 +48,14 @@ public class Crime {
         return mSolved;
     }
 
+
     public void setSolved(boolean solved) {
         mSolved=solved;
+    }
+    public String getSuspect(){
+        return mSuspect;
+    }
+    public void setSuspect(String suspect){
+        mSuspect = suspect;
     }
 }
