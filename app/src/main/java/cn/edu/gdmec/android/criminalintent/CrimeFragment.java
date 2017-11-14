@@ -2,6 +2,9 @@ package cn.edu.gdmec.android.criminalintent;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -127,6 +130,8 @@ public class CrimeFragment extends Fragment {
         //260
         final Intent pickContact = new Intent ( Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
+        pickContact.addCategory ( Intent.CATEGORY_HOME );
+
         mSuspectButton = (Button) v.findViewById ( R.id.crime_suspect );
         mSuspectButton.setOnClickListener ( new View.OnClickListener (){
             public void onClick(View v){
@@ -137,6 +142,12 @@ public class CrimeFragment extends Fragment {
             mSuspectButton.setText ( mCrime.getSuspect () );
         }
 
+        PackageManager packageManager = getActivity ().getPackageManager ();
+        if (packageManager.resolveActivity ( pickContact,
+                PackageManager.MATCH_DEFAULT_ONLY) == null){
+            mSuspectButton.setEnabled ( false );
+        }
+
         return v;
     }
 
@@ -145,11 +156,29 @@ public class CrimeFragment extends Fragment {
         if (resultCode != Activity.RESULT_OK){
             return;
         }
-        if (requestCode == REQUEST_DATE){
-            Date date = (Date) data
+        if (requestCode == REQUEST_DATE) {
+            Date date=( Date ) data
                     .getSerializableExtra ( DatePickerFragment.EXTRA_DATE );
             mCrime.setDate ( date );
             updateDate ();
+        }else if (requestCode == REQUEST_CONTACT && data != null){
+            Uri contactUri = data.getData ();
+            String[] queryFields = new String[]{
+                    ContactsContract.Contacts.DISPLAY_NAME
+            };
+            Cursor c = getActivity ().getContentResolver ()
+                    .query ( contactUri, queryFields, null, null, null );
+            try {
+                if (c.getCount () == 0){
+                    return;
+                }
+                c.moveToFirst ();
+                String suspect = c.getString ( 0 );
+                mCrime.setSuspect ( suspect );
+                mSuspectButton.setText ( suspect );
+            }finally {
+                c.close ();
+            }
         }
     }
 
