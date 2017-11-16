@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
@@ -37,6 +38,9 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_CONTACT = 1;
 
     private Crime mCrime;
+    //获取图片文件位置
+    private File mPhotoFile;
+
     private EditText mTitleField;
     private Button mDataButton;
     private CheckBox mSolvedCheckBox;
@@ -63,6 +67,8 @@ public class CrimeFragment extends Fragment {
 //                .getSerializableExtra ( CrimeActivity.EXTRA_CRIME_ID );
         UUID crimeId = (UUID ) getArguments ().getSerializable ( ARG_CRIME_ID );
         mCrime = CrimeLab.get ( getActivity () ).getCrime ( crimeId );
+        //获取图片文件位置
+        mPhotoFile = CrimeLab.get ( getActivity () ).getPhotoFile ( mCrime );
     }
     @Override
     public void onPause(){
