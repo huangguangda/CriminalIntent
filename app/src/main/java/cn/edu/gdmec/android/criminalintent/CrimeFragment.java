@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -50,10 +51,11 @@ public class CrimeFragment extends Fragment {
     private EditText mTitleField;
     private Button mDataButton;
     private CheckBox mSolvedCheckBox;
-
     private Button mSuspectButton;
+
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
+
     private Callbacks mCallbacks;
     private Button mReportButton;
 
@@ -85,6 +87,10 @@ public class CrimeFragment extends Fragment {
         //获取图片文件位置
         mPhotoFile = CrimeLab.get ( getActivity () ).getPhotoFile ( mCrime );
         //mPhotoButton = CrimeLab.get ( getActivity () ).getPhotoButton ( mCrime );
+        //获得拍照
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy ( builder.build () );
+        builder.detectFileUriExposure ();
     }
     @Override
     public void onPause(){
@@ -166,7 +172,6 @@ public class CrimeFragment extends Fragment {
         final Intent pickContact = new Intent ( Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
         //pickContact.addCategory ( Intent.CATEGORY_HOME );
-
         mSuspectButton = (Button) v.findViewById ( R.id.crime_suspect );
         mSuspectButton.setOnClickListener ( new View.OnClickListener (){
             public void onClick(View v){
@@ -184,7 +189,6 @@ public class CrimeFragment extends Fragment {
         }
 
         mPhotoButton = (ImageButton ) v.findViewById ( R.id.crime_camera );
-
         //拍照和显示照片
         final Intent captureImage = new Intent ( MediaStore.ACTION_IMAGE_CAPTURE );
         boolean canTakePhoto = mPhotoFile != null &&
@@ -207,7 +211,6 @@ public class CrimeFragment extends Fragment {
 
         //调用277
         updatePhotoView ();
-
         return v;
     }
 
@@ -216,6 +219,7 @@ public class CrimeFragment extends Fragment {
         if (resultCode != Activity.RESULT_OK){
             return;
         }
+
         if (requestCode == REQUEST_DATE) {
             Date date=( Date ) data
                     .getSerializableExtra ( DatePickerFragment.EXTRA_DATE );
@@ -280,13 +284,11 @@ public class CrimeFragment extends Fragment {
 
     private void updatePhotoView(){
         if (mPhotoFile == null || !mPhotoFile.exists ()){
-            if (mPhotoFile == null || !mPhotoFile.exists ()){
-                mPhotoView.setImageDrawable ( null );
-            }else{
-                Bitmap bitmap = PictureUtils.getScaledBitmap ( mPhotoFile.getPath (), getActivity () );
-                mPhotoView.setImageBitmap ( bitmap );
-            }
+            mPhotoView.setImageDrawable ( null );
+        }else{
+            Bitmap bitmap = PictureUtils.getScaledBitmap ( mPhotoFile.getPath (), getActivity () );
+            mPhotoView.setImageBitmap ( bitmap );
         }
     }
-
 }
+
