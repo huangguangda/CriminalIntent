@@ -24,6 +24,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import org.json.JSONException;
+
 import java.io.File;
 import java.util.Date;
 import java.util.UUID;
@@ -82,6 +84,7 @@ public class CrimeFragment extends Fragment {
         mCrime = CrimeLab.get ( getActivity () ).getCrime ( crimeId );
         //获取图片文件位置
         mPhotoFile = CrimeLab.get ( getActivity () ).getPhotoFile ( mCrime );
+        //mPhotoButton = CrimeLab.get ( getActivity () ).getPhotoButton ( mCrime );
     }
     @Override
     public void onPause(){
@@ -202,7 +205,7 @@ public class CrimeFragment extends Fragment {
 
         mPhotoView = (ImageView ) v.findViewById ( R.id.crime_photo );
 
-        //调用
+        //调用277
         updatePhotoView ();
 
         return v;
