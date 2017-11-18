@@ -30,6 +30,9 @@ public class CrimeListFragment extends Fragment {
     private Callbacks mCallbacks;
     public interface Callbacks{
         void onCrimeSelected(Crime crime);
+
+        //293
+        void onCrimeUpdated(Crime crime);
     }
     @Override
     public void onAttach(Activity activity){
@@ -94,9 +97,12 @@ public class CrimeListFragment extends Fragment {
             case R.id.menu_item_new_crime:
                 Crime crime = new Crime ();
                 CrimeLab.get ( getActivity () ).addCrime ( crime );
-                Intent intent = CrimePagerActivity
+
+                /*Intent intent = CrimePagerActivity
                         .newIntent ( getActivity (), crime.getId () );
-                startActivity ( intent );
+                startActivity ( intent );*/
+                updateUI ();
+                mCallbacks.onCrimeSelected ( crime );
                 return true;
             case R.id.menu_item_show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
@@ -121,7 +127,7 @@ public class CrimeListFragment extends Fragment {
         activity.getSupportActionBar ().setSubtitle ( subtitle );
     }
 
-    private void updateUI() {
+    public void updateUI() {
         CrimeLab crimeLab = CrimeLab.get ( getActivity () );
         List<Crime> crimes = crimeLab.getCrimes ();
 
@@ -166,8 +172,9 @@ public class CrimeListFragment extends Fragment {
 //                    .show ();
             //Intent intent = new Intent ( getActivity (), CrimeActivity.class );
             //Intent intent = CrimeActivity.newIntent ( getActivity (), mCrime.getId () );
-            Intent intent = CrimePagerActivity.newIntent ( getActivity (), mCrime.getId () );
-            startActivity ( intent );
+           /* Intent intent = CrimePagerActivity.newIntent ( getActivity (), mCrime.getId () );
+            startActivity ( intent );*/
+           mCallbacks.onCrimeSelected ( mCrime );
         }
     }
 
