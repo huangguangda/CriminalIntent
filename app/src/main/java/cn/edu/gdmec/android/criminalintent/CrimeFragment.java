@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
@@ -36,6 +38,8 @@ public class CrimeFragment extends Fragment {
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
+    //使用相机
+    private static final int REQUEST_PHOTO = 2;
 
     private Crime mCrime;
     //获取图片文件位置
@@ -157,9 +161,31 @@ public class CrimeFragment extends Fragment {
                 PackageManager.MATCH_DEFAULT_ONLY) == null){
             mSuspectButton.setEnabled ( false );
         }
+
+        mPhotoButton = (ImageButton ) v.findViewById ( R.id.crime_camera );
+
         //拍照和显示照片
-        mPhotoButton = (ImageButton) v.findViewById ( R.id.crime_camera );
-        mPhotoView = (ImageView) v.findViewById ( R.id.crime_photo );
+        final Intent captureImage = new Intent ( MediaStore.ACTION_IMAGE_CAPTURE );
+        boolean canTakePhoto = mPhotoFile != null &&
+                captureImage.resolveActivity ( packageManager ) != null;
+        mPhotoButton.setEnabled ( canTakePhoto );
+
+        if (canTakePhoto){
+            Uri uri = Uri.fromFile ( mPhotoFile );
+            captureImage.putExtra ( MediaStore.EXTRA_OUTPUT, uri );
+        }
+
+        mPhotoButton.setOnClickListener ( new View.OnClickListener (){
+            @Override
+            public void onClick(View v){
+                startActivityForResult ( captureImage, REQUEST_PHOTO );
+            }
+        } );
+
+        mPhotoView = (ImageView ) v.findViewById ( R.id.crime_photo );
+
+        //调用
+        updatePhotoView ();
 
         return v;
     }
@@ -192,6 +218,9 @@ public class CrimeFragment extends Fragment {
             }finally {
                 c.close ();
             }
+            //调用
+        }else if (requestCode == REQUEST_PHOTO){
+            updatePhotoView ();
         }
     }
 
@@ -218,4 +247,16 @@ public class CrimeFragment extends Fragment {
                 mCrime.getTitle (), dateString, solvedString, suspect);
         return report;
     }
+
+    private void updatePhotoView(){
+        if (mPhotoFile == null || !mPhotoFile.exists ()){
+            if (mPhotoFile == null || !mPhotoFile.exists ()){
+                mPhotoView.setImageDrawable ( null );
+            }else{
+                Bitmap bitmap = PictureUtils.getScaledBitmap ( mPhotoFile.getPath (), getActivity () );
+                mPhotoView.setImageBitmap ( bitmap );
+            }
+        }
+    }
+
 }
